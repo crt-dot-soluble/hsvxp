@@ -1,0 +1,12 @@
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\hsvxp.core.GeneratedMSBuildEditorConfig.editorconfig
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\hsvxp.core.AssemblyInfoInputs.cache
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\hsvxp.core.AssemblyInfo.cs
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\hsvxp.core.csproj.CoreCompileInputs.cache
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\hsvxp.core.sourcelink.json
+D:\Repositories\hsvxp\src\hsvxp.core\bin\Debug\net10.0\hsvxp.core.deps.json
+D:\Repositories\hsvxp\src\hsvxp.core\bin\Debug\net10.0\hsvxp.core.dll
+D:\Repositories\hsvxp\src\hsvxp.core\bin\Debug\net10.0\hsvxp.core.pdb
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\hsvxp.core.dll
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\refint\hsvxp.core.dll
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\hsvxp.core.pdb
+D:\Repositories\hsvxp\src\hsvxp.core\obj\Debug\net10.0\ref\hsvxp.core.dll
