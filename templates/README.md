@@ -64,36 +64,36 @@ DARK_ACCENT_1   H=342 S=35 V=49   RGB(125,81,94)   #7D515E
 JSON output:
 ```json
 [
-  {
-    "name": "MAIN_1",
-    "hsv": { "h": 357, "s": 70, "v": 94 },
-    "rgb": { "r": 240, "g": 72, "b": 80 },
-    "hex": "#F04850"
-  },
-  {
-    "name": "HIGHLIGHT_1",
-    "hsv": { "h": 2, "s": 77, "v": 100 },
-    "rgb": { "r": 255, "g": 66, "b": 59 },
-    "hex": "#FF423B"
-  },
-  {
-    "name": "SHADOW_1",
-    "hsv": { "h": 352, "s": 55, "v": 67 },
-    "rgb": { "r": 171, "g": 77, "b": 89 },
-    "hex": "#AB4D59"
-  },
-  {
-    "name": "LIGHT_ACCENT_1",
-    "hsv": { "h": 7, "s": 55, "v": 100 },
-    "rgb": { "r": 255, "g": 131, "b": 115 },
-    "hex": "#FF8373"
-  },
-  {
-    "name": "DARK_ACCENT_1",
-    "hsv": { "h": 342, "s": 35, "v": 49 },
-    "rgb": { "r": 125, "g": 81, "b": 94 },
-    "hex": "#7D515E"
-  }
+	{
+		"name": "MAIN_1",
+		"hsv": { "h": 357, "s": 70, "v": 94 },
+		"rgb": { "r": 240, "g": 72, "b": 80 },
+		"hex": "#F04850"
+	},
+	{
+		"name": "HIGHLIGHT_1",
+		"hsv": { "h": 2, "s": 77, "v": 100 },
+		"rgb": { "r": 255, "g": 66, "b": 59 },
+		"hex": "#FF423B"
+	},
+	{
+		"name": "SHADOW_1",
+		"hsv": { "h": 352, "s": 55, "v": 67 },
+		"rgb": { "r": 171, "g": 77, "b": 89 },
+		"hex": "#AB4D59"
+	},
+	{
+		"name": "LIGHT_ACCENT_1",
+		"hsv": { "h": 7, "s": 55, "v": 100 },
+		"rgb": { "r": 255, "g": 131, "b": 115 },
+		"hex": "#FF8373"
+	},
+	{
+		"name": "DARK_ACCENT_1",
+		"hsv": { "h": 342, "s": 35, "v": 49 },
+		"rgb": { "r": 125, "g": 81, "b": 94 },
+		"hex": "#7D515E"
+	}
 ]
 ```
 
@@ -110,9 +110,9 @@ DARK_ACCENT_1 342,35,49
 Create `hsvxp.config.json`:
 ```json
 {
-  "default_square_size": 64,
-  "default_multiplier": 1,
-  "default_output_name_prefix": "hsvxp"
+	"default_square_size": 64,
+	"default_multiplier": 1,
+	"default_output_name_prefix": "hsvxp"
 }
 ```
 
