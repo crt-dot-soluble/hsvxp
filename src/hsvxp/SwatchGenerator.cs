@@ -26,7 +26,7 @@ public static class SwatchGenerator
         }
 
         var columns = Math.Max(1, colors.Count / 5);
-        var tileSize = squareSize;
+        var tileSize = Math.Max(squareSize, CalculateMinimumTileSize(colors, squareSize));
         var width = tileSize * columns;
         var height = tileSize * 5;
 
@@ -128,5 +128,47 @@ public static class SwatchGenerator
 
         column = index - 1;
         return true;
+    }
+
+    private static int CalculateMinimumTileSize(IReadOnlyList<PaletteColor> colors, int requestedSize)
+    {
+        var candidate = Math.Max(requestedSize, 32);
+        for (var i = 0; i < 3; i++)
+        {
+            var font = ResolveFont(candidate);
+            var required = MeasureRequiredTileSize(colors, font);
+            if (required <= candidate)
+            {
+                return candidate;
+            }
+
+            candidate = required;
+        }
+
+        return candidate;
+    }
+
+    private static int MeasureRequiredTileSize(IReadOnlyList<PaletteColor> colors, Font font)
+    {
+        var maxNameLength = colors.Any() ? colors.Max(c => c.Name.Length) : 6;
+        var sampleName = new string('W', Math.Max(6, maxNameLength));
+        var sampleHex = "HEX: #FFFFFF";
+        var sampleRgb = "RGB: 255,255,255";
+        var sampleHsv = "HSV: 360,100,100";
+
+        var options = new SixLabors.Fonts.TextOptions(font);
+        var nameSize = SixLabors.Fonts.TextMeasurer.MeasureSize(sampleName, options);
+        var hexSize = SixLabors.Fonts.TextMeasurer.MeasureSize(sampleHex, options);
+        var rgbSize = SixLabors.Fonts.TextMeasurer.MeasureSize(sampleRgb, options);
+        var hsvSize = SixLabors.Fonts.TextMeasurer.MeasureSize(sampleHsv, options);
+
+        var maxWidth = new[] { nameSize.Width, hexSize.Width, rgbSize.Width, hsvSize.Width }.Max();
+
+        var padding = 12;
+        var lineHeight = font.Size + 2;
+        var requiredHeight = padding + (lineHeight * 4) + padding;
+        var requiredWidth = maxWidth + padding;
+
+        return (int)Math.Ceiling(Math.Max(requiredHeight, requiredWidth));
     }
 }

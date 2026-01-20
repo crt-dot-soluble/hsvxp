@@ -7,13 +7,7 @@ public static class OutputFormatter
 {
     public static string FormatText(IReadOnlyList<PaletteColor> colors)
     {
-        var lines = new List<string>(colors.Count);
-        foreach (var color in colors)
-        {
-            lines.Add(PaletteTextFormatter.FormatLine(color));
-        }
-
-        return string.Join(Environment.NewLine, lines);
+        return PaletteTableFormatter.Format(colors);
     }
 
     public static string FormatRaw(IReadOnlyList<PaletteColor> colors)

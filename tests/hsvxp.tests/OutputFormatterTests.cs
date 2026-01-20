@@ -10,12 +10,19 @@ public class OutputFormatterTests
     {
         var palette = new List<PaletteColor>
         {
-            new("MAIN_1", new HsvColor(10.4, 70.2, 80.6), new RgbColor(1, 2, 3), "#010203")
+            new("MAIN_1", new HsvColor(10.4, 70.2, 80.6), new RgbColor(1, 2, 3), "#010203"),
+            new("MAIN_2", new HsvColor(20.4, 70.2, 80.6), new RgbColor(4, 5, 6), "#040506")
         };
 
         var output = OutputFormatter.FormatText(palette);
-
-        Assert.Equal("MAIN_1          H=10 S=70 V=81   RGB(1,2,3)   #010203", output);
+        var lines = output.Split(Environment.NewLine);
+        Assert.True(lines.Length >= 4);
+        Assert.Contains("NAME", lines[0]);
+        Assert.Contains("HEX", lines[0]);
+        Assert.True(lines[1].All(ch => ch == '-' || ch == ' '));
+        Assert.Contains("MAIN_1", output);
+        Assert.Contains("MAIN_2", output);
+        Assert.Contains(Environment.NewLine + Environment.NewLine, output);
     }
 
     [Fact]

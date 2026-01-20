@@ -5,7 +5,7 @@ namespace Hsvxp.Core;
 
 public sealed class Config
 {
-    public int DefaultSquareSize { get; init; } = 512;
+    public int DefaultSquareSize { get; init; } = 32;
     public int DefaultMultiplier { get; init; } = 1;
     public string DefaultOutputNamePrefix { get; init; } = "hsvxp";
 
@@ -36,7 +36,7 @@ public sealed class Config
 
             return new Config
             {
-                DefaultSquareSize = configData.DefaultSquareSize ?? 512,
+                DefaultSquareSize = configData.DefaultSquareSize ?? 32,
                 DefaultMultiplier = configData.DefaultMultiplier ?? 1,
                 DefaultOutputNamePrefix = string.IsNullOrWhiteSpace(configData.DefaultOutputNamePrefix)
                     ? "hsvxp"

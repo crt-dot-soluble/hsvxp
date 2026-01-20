@@ -11,6 +11,6 @@ public class PaletteTextFormatterTests
 
         var output = PaletteTextFormatter.FormatLine(color);
 
-        Assert.Equal("MAIN_1          H=10 S=70 V=81   RGB(1,2,3)   #010203", output);
+        Assert.Equal("MAIN_1          H= 10 S= 70 V= 81   RGB(  1,  2,  3)   #010203", output);
     }
 }

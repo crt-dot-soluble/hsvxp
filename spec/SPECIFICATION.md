@@ -163,7 +163,7 @@ MAIN.V = inverted.V
 
 # 12. SWATCH_GENERATION
 JPEG output, 5 rows (MAIN, HIGHLIGHT, SHADOW, LIGHT_ACCENT, DARK_ACCENT) and N columns where N=multiplier.
-Default square size is 16×16 (configurable).
+Default square size is 32×32 (configurable) and clamped to a minimum that fits all labels.
 Each tile overlay includes:
 VARIANT_NAME
 HEX: #RRGGBB
@@ -203,11 +203,13 @@ missing_color: "ERROR: No color provided. Use a color or --random."
 ---
 
 # 17. SAMPLE_OUTPUT
-MAIN_1          H=355 S=70 V=95   RGB(240,30,40)   #F01E28
-HIGHLIGHT_1     H=360 S=77 V=100  RGB(255,60,70)   #FF3C46
-SHADOW_1        H=350 S=55 V=68   RGB(175,40,55)   #AF2837
-LIGHT_ACCENT_1  H=5   S=55 V=100  RGB(255,150,160) #FF96A0
-DARK_ACCENT_1   H=340 S=35 V=50   RGB(130,50,70)   #823246
+NAME              H    S    V    R    G    B  HEX
+--------------  ---  ---  ---  ---  ---  ---  -------
+MAIN_1          355   70   95  240   30   40  #F01E28
+HIGHLIGHT_1     360   77  100  255   60   70  #FF3C46
+SHADOW_1        350   55   68  175   40   55  #AF2837
+LIGHT_ACCENT_1    5   55  100  255  150  160  #FF96A0
+DARK_ACCENT_1   340   35   50  130   50   70  #823246
 
 ---
 

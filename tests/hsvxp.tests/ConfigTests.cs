@@ -10,7 +10,7 @@ public class ConfigTests
         var config = Config.Load(Path.Combine(Path.GetTempPath(), "missing.config.json"), out var invalid);
 
         Assert.False(invalid);
-        Assert.Equal(512, config.DefaultSquareSize);
+        Assert.Equal(32, config.DefaultSquareSize);
         Assert.Equal(1, config.DefaultMultiplier);
         Assert.Equal("hsvxp", config.DefaultOutputNamePrefix);
     }
@@ -25,7 +25,7 @@ public class ConfigTests
             var config = Config.Load(path, out var invalid);
 
             Assert.True(invalid);
-            Assert.Equal(512, config.DefaultSquareSize);
+            Assert.Equal(32, config.DefaultSquareSize);
         }
         finally
         {
