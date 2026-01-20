@@ -49,3 +49,15 @@
 
 ## 0.2.4
 - Routed CLI text output through the shared palette formatter/writer.
+
+## 0.2.5
+- Enforced minimum swatch tile size based on label measurements.
+
+## 1.0.0
+- Finalized CLI output as a clean table with group dividers.
+- Confirmed swatch grid layout and minimum tile size enforcement.
+- Updated README and spec with table sample output and swatch example.
+- Built distribution artifacts (exe and core DLL).
+
+## 0.2.6
+- Set default square size to the minimum baseline (32px).

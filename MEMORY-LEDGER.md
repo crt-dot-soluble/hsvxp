@@ -23,3 +23,9 @@
 - Updated swatch rendering to 5xN grid and restored 16px default tile size.
 - Multiplier now iterates palettes by seeding next column from previous highlight.
 - Routed CLI text output through shared PaletteConsoleWriter for consistent formatting.
+- Added external terminal task using PowerShell stop-parsing to pass #RRGGBB safely.
+- Swatch tiles now enforce a minimum size required to fit all text labels.
+- Default square size set to 32 so automatic minimum sizing applies by default.
+- Updated README/spec to reflect table output and swatch grid defaults.
+- Prepared distribution artifacts (exe and core DLL) for v1.0.0 release.
+- Documented distribution artifacts in README.

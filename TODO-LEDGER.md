@@ -16,3 +16,7 @@
 - [DONE] Fix JSON output for AOT trimming
 - [DONE] Update multiplier behavior and swatch layout defaults
 - [DONE] Integrate shared console output formatting
+- [DONE] Enforce minimum swatch tile size based on label fit
+- [DONE] Default square size set to minimum baseline
+- [DONE] Refresh README/spec and prepare release artifacts
+- [DONE] Document distribution artifacts in README

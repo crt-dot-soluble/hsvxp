@@ -24,6 +24,11 @@ dotnet build hsvxp.sln
 dotnet test hsvxp.sln
 ```
 
+## Distribution
+Release artifacts are placed in `dist/` after publishing:
+- `dist/hsvxp.exe`
+- `dist/hsvxp.core.dll`
+
 ## Usage
 ```bash
 hsvxp <color> [options]
@@ -52,13 +57,27 @@ Accepted formats (case-insensitive, whitespace tolerant):
 - `hsv(H,S,V)`
 
 ## Example output
-Default text output:
+Text output (table format):
 ```text
-MAIN_1          H=357 S=70 V=94   RGB(240,72,80)   #F04850
-HIGHLIGHT_1     H=2 S=77 V=100   RGB(255,66,59)   #FF423B
-SHADOW_1        H=352 S=55 V=67   RGB(171,77,89)   #AB4D59
-LIGHT_ACCENT_1  H=7 S=55 V=100   RGB(255,131,115)   #FF8373
-DARK_ACCENT_1   H=342 S=35 V=49   RGB(125,81,94)   #7D515E
+NAME              H    S    V    R    G    B  HEX
+--------------  ---  ---  ---  ---  ---  ---  -------
+MAIN_1          357   70   94  240   72   80  #F04850
+HIGHLIGHT_1       2   77  100  255   66   59  #FF423B
+SHADOW_1        352   55   67  171   77   89  #AB4D59
+LIGHT_ACCENT_1    7   55  100  255  131  115  #FF8373
+DARK_ACCENT_1   342   35   49  125   81   94  #7D515E
+
+MAIN_2            2   70  100  255   83   77  #FF534D
+HIGHLIGHT_2       7   77  100  255   82   59  #FF523B
+SHADOW_2        357   55   73  186   84   89  #BA5459
+LIGHT_ACCENT_2   12   55  100  255  143  115  #FF8F73
+DARK_ACCENT_2   347   35   55  140   91  102  #8C5B66
+
+MAIN_3            7   70  100  255   98   77  #FF624D
+HIGHLIGHT_3      12   77  100  255   98   59  #FF623B
+SHADOW_3          2   55   73  186   87   84  #BA5754
+LIGHT_ACCENT_3   17   55  100  255  155  115  #FF9B73
+DARK_ACCENT_3   352   35   55  140   91   98  #8C5B62
 ```
 
 JSON output:
@@ -110,11 +129,13 @@ DARK_ACCENT_1 342,35,49
 Create `hsvxp.config.json`:
 ```json
 {
-  "default_square_size": 512,
+  "default_square_size": 32,
   "default_multiplier": 1,
   "default_output_name_prefix": "hsvxp"
 }
 ```
 
 ## Swatch output
-Use `-o` to generate a vertical JPEG swatch. Each tile includes the variant name, hex, RGB, and HSV values.
+Use `-o` to generate a 5×N swatch grid (5 rows × multiplier columns). Each tile includes the variant name, hex, RGB, and HSV values. The tile size is clamped to a minimum that fits all labels.
+
+![Sample swatch](docs/sample-swatch.jpg)
