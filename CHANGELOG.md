@@ -53,6 +53,10 @@
 ## 0.2.5
 - Enforced minimum swatch tile size based on label measurements.
 
+## 1.0.1
+- Added swatch orientation option to render palettes as rows or columns.
+- Standardized swatch label formatting to use rgb(...) and hsv(...).
+
 ## 1.0.0
 - Finalized CLI output as a clean table with group dividers.
 - Confirmed swatch grid layout and minimum tile size enforcement.

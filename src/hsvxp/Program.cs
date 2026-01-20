@@ -31,6 +31,11 @@ internal static class Program
 			Description = "Swatch filename."
 		};
 
+		var swatchOrientationOption = new Option<string?>("--swatch-orientation", new[] { "-O" })
+		{
+			Description = "Swatch orientation: columns or rows."
+		};
+
 		var copyOption = new Option<bool>("--copy", new[] { "-c" })
 		{
 			Description = "Copy output to clipboard (Windows only)."
@@ -77,6 +82,7 @@ internal static class Program
 			outputSwatchOption,
 			squareSizeOption,
 			nameOption,
+			swatchOrientationOption,
 			copyOption,
 			randomOption,
 			invertOption,
@@ -98,6 +104,7 @@ internal static class Program
 		var outputSwatch = parseResult.GetValue(outputSwatchOption);
 		var squareSize = parseResult.GetValue(squareSizeOption);
 		var name = parseResult.GetValue(nameOption);
+		var swatchOrientation = parseResult.GetValue(swatchOrientationOption);
 		var copy = parseResult.GetValue(copyOption);
 		var random = parseResult.GetValue(randomOption);
 		var invert = parseResult.GetValue(invertOption);
@@ -112,6 +119,7 @@ internal static class Program
 			"-o", "--output-swatch",
 			"-s", "--square-size",
 			"-n", "--name",
+			"-O", "--swatch-orientation",
 			"-c", "--copy",
 			"-r", "--random",
 			"-i", "--invert",
@@ -143,6 +151,11 @@ internal static class Program
 		}
 
 		var resolvedSquareSize = squareSize ?? config.DefaultSquareSize;
+		if (!TryParseOrientation(swatchOrientation, out var resolvedOrientation))
+		{
+			Console.WriteLine(Errors.InvalidSwatchOrientation);
+			return ExitFailure;
+		}
 
 		if (!random && string.IsNullOrWhiteSpace(parsedColor))
 		{
@@ -210,7 +223,7 @@ internal static class Program
 			var resolvedName = ResolveSwatchName(name, config.DefaultOutputNamePrefix);
 			try
 			{
-				SwatchGenerator.Generate(resolvedName, palette, resolvedSquareSize);
+				SwatchGenerator.Generate(resolvedName, palette, resolvedSquareSize, resolvedOrientation);
 			}
 			catch
 			{
@@ -220,6 +233,22 @@ internal static class Program
 		}
 
 		return 0;
+	}
+
+	private static bool TryParseOrientation(string? value, out SwatchOrientation orientation)
+	{
+		orientation = SwatchOrientation.Columns;
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return true;
+		}
+
+		return value.Trim().ToLowerInvariant() switch
+		{
+			"columns" => (orientation = SwatchOrientation.Columns) == SwatchOrientation.Columns,
+			"rows" => (orientation = SwatchOrientation.Rows) == SwatchOrientation.Rows,
+			_ => false
+		};
 	}
 
 	private static HsvColor CreateRandomMain()

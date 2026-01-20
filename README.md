@@ -38,6 +38,7 @@ Options:
 - `-o, --output-swatch`
 - `-s, --square-size <int>`
 - `-n, --name <filename>`
+- `-O, --swatch-orientation <columns|rows>`
 - `-c, --copy`
 - `-r, --random`
 - `-i, --invert`
@@ -136,6 +137,6 @@ Create `hsvxp.config.json`:
 ```
 
 ## Swatch output
-Use `-o` to generate a 5×N swatch grid (5 rows × multiplier columns). Each tile includes the variant name, hex, RGB, and HSV values. The tile size is clamped to a minimum that fits all labels.
+Use `-o` to generate a 5×N swatch grid (5 rows × multiplier columns). Each tile includes the variant name, hex, `rgb(...)`, and `hsv(...)` values. The tile size is clamped to a minimum that fits all labels. Use `--swatch-orientation rows` to swap rows/columns (5 columns × multiplier rows).
 
 ![Sample swatch](docs/sample-swatch.jpg)

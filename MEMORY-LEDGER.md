@@ -29,3 +29,4 @@
 - Updated README/spec to reflect table output and swatch grid defaults.
 - Prepared distribution artifacts (exe and core DLL) for v1.0.0 release.
 - Documented distribution artifacts in README.
+- Added swatch orientation flag to swap rows/columns and standardized swatch labels to rgb(...) and hsv(...).

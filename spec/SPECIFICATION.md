@@ -1,4 +1,4 @@
-# SPEC_VERSION: 1.0.0
+# SPEC_VERSION: 1.0.1
 # APP_NAME: HSVXP
 # PURPOSE: Deterministic HSV‑based palette expansion CLI for pixel‑art workflows, supporting strict color input formats, palette multiplication, and standardized labeled swatch tiles.
 
@@ -134,6 +134,7 @@ Text, JSON, or raw HSV.
 -o, --output-swatch
 -s, --square-size <int>
 -n, --name <filename>
+-O, --swatch-orientation <columns|rows>
 -c, --copy
 -r, --random
 -i, --invert
@@ -164,11 +165,12 @@ MAIN.V = inverted.V
 # 12. SWATCH_GENERATION
 JPEG output, 5 rows (MAIN, HIGHLIGHT, SHADOW, LIGHT_ACCENT, DARK_ACCENT) and N columns where N=multiplier.
 Default square size is 32×32 (configurable) and clamped to a minimum that fits all labels.
+Swatch orientation defaults to 5 rows × N columns (N = multiplier). When --swatch-orientation rows is provided, render 5 columns × N rows.
 Each tile overlay includes:
 VARIANT_NAME
 HEX: #RRGGBB
-RGB: R,G,B
-HSV: H,S,V
+RGB: rgb(R,G,B)
+HSV: hsv(H,S,V)
 
 ---
 
@@ -182,6 +184,7 @@ Supports: default_square_size, default_multiplier, default_output_name_prefix
 invalid_color: "ERROR: Invalid color format. Use rgb(), hsv(), hex(), #RGB, or #RRGGBB"
 invalid_config: "ERROR: Config file malformed. Using defaults."
 swatch_failure: "ERROR: Could not write swatch file."
+invalid_swatch_orientation: "ERROR: Invalid swatch orientation. Use columns or rows."
 invalid_multiplier: "ERROR: Invalid multiplier. Use 1–16."
 missing_color: "ERROR: No color provided. Use a color or --random."
 
@@ -218,6 +221,7 @@ hsvxp <color> [options]
 -o, --output-swatch
 -s, --square-size <int>
 -n, --name <filename>
+-O, --swatch-orientation <columns|rows>
 -c, --copy
 -r, --random
 -i, --invert

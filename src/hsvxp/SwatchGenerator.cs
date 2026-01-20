@@ -18,17 +18,19 @@ public static class SwatchGenerator
         ["DARK_ACCENT"] = 4
     };
 
-    public static void Generate(string filePath, IReadOnlyList<PaletteColor> colors, int squareSize)
+    public static void Generate(string filePath, IReadOnlyList<PaletteColor> colors, int squareSize, SwatchOrientation orientation)
     {
         if (squareSize <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(squareSize));
         }
 
-        var columns = Math.Max(1, colors.Count / 5);
+        var paletteCount = Math.Max(1, colors.Count / 5);
+        var columns = orientation == SwatchOrientation.Rows ? 5 : paletteCount;
+        var rows = orientation == SwatchOrientation.Rows ? paletteCount : 5;
         var tileSize = Math.Max(squareSize, CalculateMinimumTileSize(colors, squareSize));
         var width = tileSize * columns;
-        var height = tileSize * 5;
+        var height = tileSize * rows;
 
         using var image = new Image<Rgba32>(width, height);
         image.Mutate(ctx => ctx.Fill(Color.Black));
@@ -38,7 +40,7 @@ public static class SwatchGenerator
 
         foreach (var color in colors)
         {
-            if (!TryGetTilePosition(color.Name, out var column, out var row))
+            if (!TryGetTilePosition(color.Name, orientation, out var column, out var row))
             {
                 continue;
             }
@@ -56,12 +58,12 @@ public static class SwatchGenerator
 
             DrawText(image, color.Name, font, textColor, startX, startY);
             DrawText(image, $"HEX: {color.Hex}", font, textColor, startX, startY + lineHeight);
-            DrawText(image, $"RGB: {color.Rgb.R},{color.Rgb.G},{color.Rgb.B}", font, textColor, startX, startY + lineHeight * 2);
+            DrawText(image, $"RGB: rgb({color.Rgb.R},{color.Rgb.G},{color.Rgb.B})", font, textColor, startX, startY + lineHeight * 2);
 
             var h = (int)Math.Round(color.Hsv.H, MidpointRounding.AwayFromZero);
             var s = (int)Math.Round(color.Hsv.S, MidpointRounding.AwayFromZero);
             var v = (int)Math.Round(color.Hsv.V, MidpointRounding.AwayFromZero);
-            DrawText(image, $"HSV: {h},{s},{v}", font, textColor, startX, startY + lineHeight * 3);
+            DrawText(image, $"HSV: hsv({h},{s},{v})", font, textColor, startX, startY + lineHeight * 3);
         }
 
         image.SaveAsJpeg(filePath);
@@ -97,7 +99,7 @@ public static class SwatchGenerator
         return luminance > 0.6 ? Color.Black : Color.White;
     }
 
-    private static bool TryGetTilePosition(string name, out int column, out int row)
+    private static bool TryGetTilePosition(string name, SwatchOrientation orientation, out int column, out int row)
     {
         column = 0;
         row = 0;
@@ -121,12 +123,21 @@ public static class SwatchGenerator
             return false;
         }
 
-        if (!RoleOrder.TryGetValue(role, out row))
+        if (!RoleOrder.TryGetValue(role, out var roleIndex))
         {
             return false;
         }
 
-        column = index - 1;
+        var paletteIndex = index - 1;
+        if (orientation == SwatchOrientation.Rows)
+        {
+            column = roleIndex;
+            row = paletteIndex;
+            return true;
+        }
+
+        column = paletteIndex;
+        row = roleIndex;
         return true;
     }
 
@@ -153,8 +164,8 @@ public static class SwatchGenerator
         var maxNameLength = colors.Any() ? colors.Max(c => c.Name.Length) : 6;
         var sampleName = new string('W', Math.Max(6, maxNameLength));
         var sampleHex = "HEX: #FFFFFF";
-        var sampleRgb = "RGB: 255,255,255";
-        var sampleHsv = "HSV: 360,100,100";
+        var sampleRgb = "RGB: rgb(255,255,255)";
+        var sampleHsv = "HSV: hsv(360,100,100)";
 
         var options = new SixLabors.Fonts.TextOptions(font);
         var nameSize = SixLabors.Fonts.TextMeasurer.MeasureSize(sampleName, options);
@@ -171,4 +182,10 @@ public static class SwatchGenerator
 
         return (int)Math.Ceiling(Math.Max(requiredHeight, requiredWidth));
     }
+}
+
+public enum SwatchOrientation
+{
+    Columns,
+    Rows
 }
