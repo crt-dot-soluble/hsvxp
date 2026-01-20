@@ -10,11 +10,7 @@ public static class OutputFormatter
         var lines = new List<string>(colors.Count);
         foreach (var color in colors)
         {
-            var h = RoundInt(color.Hsv.H);
-            var s = RoundInt(color.Hsv.S);
-            var v = RoundInt(color.Hsv.V);
-            var line = $"{color.Name.PadRight(15)} H={h} S={s} V={v}   RGB({color.Rgb.R},{color.Rgb.G},{color.Rgb.B})   {color.Hex}";
-            lines.Add(line);
+            lines.Add(PaletteTextFormatter.FormatLine(color));
         }
 
         return string.Join(Environment.NewLine, lines);

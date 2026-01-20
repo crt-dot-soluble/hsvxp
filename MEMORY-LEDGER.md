@@ -20,3 +20,6 @@
 - Added AOT-safe JSON serialization by wiring DefaultJsonTypeInfoResolver.
 - Expanded test coverage for color math and output formatting.
 - Added project README (and template) with real CLI output examples.
+- Updated swatch rendering to 5xN grid and restored 16px default tile size.
+- Multiplier now iterates palettes by seeding next column from previous highlight.
+- Routed CLI text output through shared PaletteConsoleWriter for consistent formatting.

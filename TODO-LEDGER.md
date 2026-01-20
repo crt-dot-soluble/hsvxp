@@ -14,3 +14,5 @@
 - [DONE] Expand test coverage for color math and output formatting
 - [DONE] Add project README with example outputs
 - [DONE] Fix JSON output for AOT trimming
+- [DONE] Update multiplier behavior and swatch layout defaults
+- [DONE] Integrate shared console output formatting

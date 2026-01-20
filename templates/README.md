@@ -110,7 +110,7 @@ DARK_ACCENT_1 342,35,49
 Create `hsvxp.config.json`:
 ```json
 {
-	"default_square_size": 64,
+	"default_square_size": 512,
 	"default_multiplier": 1,
 	"default_output_name_prefix": "hsvxp"
 }

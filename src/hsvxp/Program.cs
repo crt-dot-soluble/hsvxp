@@ -1,5 +1,5 @@
 ﻿using System.CommandLine;
-using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 using Hsvxp;
 using Hsvxp.Core;
 using TextCopy;
@@ -10,22 +10,66 @@ internal static class Program
 
 	public static async Task<int> Main(string[] args)
 	{
-		var colorArgument = new Argument<string?>("color", () => null)
+		var colorArgument = new Argument<string?>("color")
 		{
+			Arity = ArgumentArity.ZeroOrOne,
 			Description = "Input color in rgb(), hsv(), hex(), #RGB, or #RRGGBB format."
 		};
 
-		var outputSwatchOption = new Option<bool>(new[] { "-o", "--output-swatch" }, "Write JPEG swatch output.");
-		var squareSizeOption = new Option<int?>(new[] { "-s", "--square-size" }, "Square size in pixels.");
-		var nameOption = new Option<string?>(new[] { "-n", "--name" }, "Swatch filename.");
-		var copyOption = new Option<bool>(new[] { "-c", "--copy" }, "Copy output to clipboard (Windows only).");
-		var randomOption = new Option<bool>(new[] { "-r", "--random" }, "Generate a random base color.");
-		var invertOption = new Option<bool>(new[] { "-i", "--invert" }, "Invert the input RGB color before HSV normalization.");
-		var jsonOption = new Option<bool>(new[] { "-j", "--json" }, "Output JSON.");
-		var rawOption = new Option<bool>(new[] { "-R", "--raw" }, "Output raw HSV.");
-		var configOption = new Option<string?>(new[] { "-C", "--config" }, "Path to hsvxp.config.json.");
-		var noWindowsCompletionsOption = new Option<bool>(new[] { "-W", "--no-windows-completions" }, "Skip Windows autocomplete registration.");
-		var multiplierOption = new Option<int?>(new[] { "-m", "--multiplier" }, "Palette multiplier 1-16.");
+		var outputSwatchOption = new Option<bool>("--output-swatch", new[] { "-o" })
+		{
+			Description = "Write JPEG swatch output."
+		};
+
+		var squareSizeOption = new Option<int?>("--square-size", new[] { "-s" })
+		{
+			Description = "Square size in pixels."
+		};
+
+		var nameOption = new Option<string?>("--name", new[] { "-n" })
+		{
+			Description = "Swatch filename."
+		};
+
+		var copyOption = new Option<bool>("--copy", new[] { "-c" })
+		{
+			Description = "Copy output to clipboard (Windows only)."
+		};
+
+		var randomOption = new Option<bool>("--random", new[] { "-r" })
+		{
+			Description = "Generate a random base color."
+		};
+
+		var invertOption = new Option<bool>("--invert", new[] { "-i" })
+		{
+			Description = "Invert the input RGB color before HSV normalization."
+		};
+
+		var jsonOption = new Option<bool>("--json", new[] { "-j" })
+		{
+			Description = "Output JSON."
+		};
+
+		var rawOption = new Option<bool>("--raw", new[] { "-R" })
+		{
+			Description = "Output raw HSV."
+		};
+
+		var configOption = new Option<string?>("--config", new[] { "-C" })
+		{
+			Description = "Path to hsvxp.config.json."
+		};
+
+		var noWindowsCompletionsOption = new Option<bool>("--no-windows-completions", new[] { "-W" })
+		{
+			Description = "Skip Windows autocomplete registration."
+		};
+
+		var multiplierOption = new Option<int?>("--multiplier", new[] { "-m" })
+		{
+			Description = "Palette multiplier 1-16."
+		};
 
 		var rootCommand = new RootCommand("HSVXP palette generator")
 		{
@@ -43,131 +87,139 @@ internal static class Program
 			multiplierOption
 		};
 
-		rootCommand.SetHandler(context =>
+		var parseResult = rootCommand.Parse(args);
+		if (parseResult.Errors.Count > 0)
 		{
-			var parsedColor = context.ParseResult.GetValueForArgument(colorArgument);
-			var outputSwatch = context.ParseResult.GetValueForOption(outputSwatchOption);
-			var squareSize = context.ParseResult.GetValueForOption(squareSizeOption);
-			var name = context.ParseResult.GetValueForOption(nameOption);
-			var copy = context.ParseResult.GetValueForOption(copyOption);
-			var random = context.ParseResult.GetValueForOption(randomOption);
-			var invert = context.ParseResult.GetValueForOption(invertOption);
-			var json = context.ParseResult.GetValueForOption(jsonOption);
-			var raw = context.ParseResult.GetValueForOption(rawOption);
-			var configPath = context.ParseResult.GetValueForOption(configOption);
-			var noWindowsCompletions = context.ParseResult.GetValueForOption(noWindowsCompletionsOption);
-			var multiplier = context.ParseResult.GetValueForOption(multiplierOption);
+			Console.WriteLine(Errors.InvalidColor);
+			return ExitFailure;
+		}
 
-			var optionAliases = new[]
-			{
-				"-o", "--output-swatch",
-				"-s", "--square-size",
-				"-n", "--name",
-				"-c", "--copy",
-				"-r", "--random",
-				"-i", "--invert",
-				"-j", "--json",
-				"-R", "--raw",
-				"-C", "--config",
-				"-W", "--no-windows-completions",
-				"-m", "--multiplier"
-			};
+		var parsedColor = parseResult.GetValue(colorArgument);
+		var outputSwatch = parseResult.GetValue(outputSwatchOption);
+		var squareSize = parseResult.GetValue(squareSizeOption);
+		var name = parseResult.GetValue(nameOption);
+		var copy = parseResult.GetValue(copyOption);
+		var random = parseResult.GetValue(randomOption);
+		var invert = parseResult.GetValue(invertOption);
+		var json = parseResult.GetValue(jsonOption);
+		var raw = parseResult.GetValue(rawOption);
+		var configPath = parseResult.GetValue(configOption);
+		var noWindowsCompletions = parseResult.GetValue(noWindowsCompletionsOption);
+		var multiplier = parseResult.GetValue(multiplierOption);
 
-			if (!noWindowsCompletions)
+		var optionAliases = new[]
+		{
+			"-o", "--output-swatch",
+			"-s", "--square-size",
+			"-n", "--name",
+			"-c", "--copy",
+			"-r", "--random",
+			"-i", "--invert",
+			"-j", "--json",
+			"-R", "--raw",
+			"-C", "--config",
+			"-W", "--no-windows-completions",
+			"-m", "--multiplier"
+		};
+
+		if (!noWindowsCompletions)
+		{
+			WindowsCompletionRegistrar.TryRegister("hsvxp", optionAliases);
+		}
+
+		_ = AnsiSupportDetector.IsAnsiSupported();
+
+		var config = Config.Load(configPath, out var invalidConfig);
+		if (invalidConfig)
+		{
+			Console.WriteLine(Errors.InvalidConfig);
+		}
+
+		var resolvedMultiplier = multiplier ?? config.DefaultMultiplier;
+		if (resolvedMultiplier is < 1 or > 16)
+		{
+			Console.WriteLine(Errors.InvalidMultiplier);
+			return ExitFailure;
+		}
+
+		var resolvedSquareSize = squareSize ?? config.DefaultSquareSize;
+
+		if (!random && string.IsNullOrWhiteSpace(parsedColor))
+		{
+			Console.WriteLine(Errors.MissingColor);
+			return ExitFailure;
+		}
+
+		InputColor? inputColor = null;
+		if (!random)
+		{
+			if (!ColorParser.TryParse(parsedColor!, out var parsed))
 			{
-				WindowsCompletionRegistrar.TryRegister("hsvxp", optionAliases);
+				Console.WriteLine(Errors.InvalidColor);
+				return ExitFailure;
 			}
 
-			_ = AnsiSupportDetector.IsAnsiSupported();
+			inputColor = parsed;
+		}
 
-			var config = Config.Load(configPath, out var invalidConfig);
-			if (invalidConfig)
-			{
-				Console.WriteLine(Errors.InvalidConfig);
-			}
+		var main = random
+			? CreateRandomMain()
+			: new HsvColor(inputColor!.Hsv.H, 70, inputColor!.Hsv.V);
 
-			var resolvedMultiplier = multiplier ?? config.DefaultMultiplier;
-			if (resolvedMultiplier is < 1 or > 16)
-			{
-				Console.WriteLine(Errors.InvalidMultiplier);
-				context.ExitCode = ExitFailure;
-				return;
-			}
+		if (invert)
+		{
+			var rgb = random
+				? ColorMath.HsvToRgb(main)
+				: inputColor!.Rgb;
 
-			var resolvedSquareSize = squareSize ?? config.DefaultSquareSize;
+			var inverted = new RgbColor((byte)(255 - rgb.R), (byte)(255 - rgb.G), (byte)(255 - rgb.B));
+			var invertedHsv = ColorMath.RgbToHsv(inverted);
+			main = new HsvColor(invertedHsv.H, 70, invertedHsv.V);
+		}
 
-			if (!random && string.IsNullOrWhiteSpace(parsedColor))
-			{
-				Console.WriteLine(Errors.MissingColor);
-				context.ExitCode = ExitFailure;
-				return;
-			}
-
-			InputColor? inputColor = null;
-			if (!random)
-			{
-				if (!ColorParser.TryParse(parsedColor!, out var parsed))
-				{
-					Console.WriteLine(Errors.InvalidColor);
-					context.ExitCode = ExitFailure;
-					return;
-				}
-
-				inputColor = parsed;
-			}
-
-			var main = random
-				? CreateRandomMain()
-				: new HsvColor(inputColor!.Hsv.H, 70, inputColor!.Hsv.V);
-
-			if (invert)
-			{
-				var rgb = random
-					? ColorMath.HsvToRgb(main)
-					: inputColor!.Rgb;
-
-				var inverted = new RgbColor((byte)(255 - rgb.R), (byte)(255 - rgb.G), (byte)(255 - rgb.B));
-				var invertedHsv = ColorMath.RgbToHsv(inverted);
-				main = new HsvColor(invertedHsv.H, 70, invertedHsv.V);
-			}
-
-			var palette = PaletteGenerator.Generate(main, resolvedMultiplier);
-			var output = json
-				? OutputFormatter.FormatJson(palette)
-				: raw
-					? OutputFormatter.FormatRaw(palette)
+		var palette = PaletteGenerator.Generate(main, resolvedMultiplier);
+		var output = json
+			? OutputFormatter.FormatJson(palette)
+			: raw
+				? OutputFormatter.FormatRaw(palette)
 					: OutputFormatter.FormatText(palette);
 
+		if (json || raw)
+		{
 			Console.WriteLine(output);
+		}
+		else
+		{
+			PaletteConsoleWriter.WriteText(palette);
+		}
 
-			if (copy && OperatingSystem.IsWindows())
+		if (copy && OperatingSystem.IsWindows())
+		{
+			try
 			{
-				try
-				{
-					ClipboardService.SetText(output);
-				}
-				catch
-				{
-					// Clipboard integration is best-effort.
-				}
+				ClipboardService.SetText(output);
 			}
-
-			if (outputSwatch)
+			catch
 			{
-				var resolvedName = ResolveSwatchName(name, config.DefaultOutputNamePrefix);
-				try
-				{
-					SwatchGenerator.Generate(resolvedName, palette, resolvedSquareSize);
-				}
-				catch
-				{
-					Console.WriteLine(Errors.SwatchFailure);
-					context.ExitCode = ExitFailure;
-				}
+				// Clipboard integration is best-effort.
 			}
-		});
+		}
 
-		return await rootCommand.InvokeAsync(args);
+		if (outputSwatch)
+		{
+			var resolvedName = ResolveSwatchName(name, config.DefaultOutputNamePrefix);
+			try
+			{
+				SwatchGenerator.Generate(resolvedName, palette, resolvedSquareSize);
+			}
+			catch
+			{
+				Console.WriteLine(Errors.SwatchFailure);
+				return ExitFailure;
+			}
+		}
+
+		return 0;
 	}
 
 	private static HsvColor CreateRandomMain()

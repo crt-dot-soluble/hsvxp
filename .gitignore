@@ -8,3 +8,5 @@ TestResults/
 *.nupkg
 *.snupkg
 coverage.cobertura.xml
+artifacts/
+*.jpg

@@ -120,7 +120,7 @@ saturation and value clamp to 0–100.
 - multiplier = 1 → 5 colors
 - multiplier = 3 → 15 colors
 - Naming: ROLE_1, ROLE_2, ...
-- Does not alter HSV math
+- Iterative expansion: each next column reuses the previous column HIGHLIGHT as the new MAIN (H preserved, S forced to 70, V preserved).
 - Valid range: 1–16
 
 ---
@@ -162,7 +162,8 @@ MAIN.V = inverted.V
 ---
 
 # 12. SWATCH_GENERATION
-JPEG output, vertical layout, 5 × multiplier tiles.
+JPEG output, 5 rows (MAIN, HIGHLIGHT, SHADOW, LIGHT_ACCENT, DARK_ACCENT) and N columns where N=multiplier.
+Default square size is 16×16 (configurable).
 Each tile overlay includes:
 VARIANT_NAME
 HEX: #RRGGBB

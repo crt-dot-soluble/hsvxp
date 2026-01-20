@@ -14,21 +14,33 @@ public static class PaletteGenerator
     public static IReadOnlyList<PaletteColor> Generate(HsvColor main, int multiplier)
     {
         var results = new List<PaletteColor>(Roles.Length * multiplier);
+        var currentMain = main;
 
-        foreach (var (role, hOffset, sOffset, vOffset) in Roles)
+        for (var index = 1; index <= multiplier; index++)
         {
-            var adjusted = ColorMath.ClampHsv(new HsvColor(
-                main.H + hOffset,
-                main.S + sOffset,
-                main.V + vOffset));
+            HsvColor? highlight = null;
 
-            var rgb = ColorMath.HsvToRgb(adjusted);
-            var hex = ColorMath.ToHex(rgb);
-
-            for (var index = 1; index <= multiplier; index++)
+            foreach (var (role, hOffset, sOffset, vOffset) in Roles)
             {
+                var adjusted = ColorMath.ClampHsv(new HsvColor(
+                    currentMain.H + hOffset,
+                    currentMain.S + sOffset,
+                    currentMain.V + vOffset));
+
+                if (role == "HIGHLIGHT")
+                {
+                    highlight = adjusted;
+                }
+
+                var rgb = ColorMath.HsvToRgb(adjusted);
+                var hex = ColorMath.ToHex(rgb);
                 var name = $"{role}_{index}";
                 results.Add(new PaletteColor(name, adjusted, rgb, hex));
+            }
+
+            if (highlight is not null)
+            {
+                currentMain = new HsvColor(highlight.Value.H, 70, highlight.Value.V);
             }
         }
 

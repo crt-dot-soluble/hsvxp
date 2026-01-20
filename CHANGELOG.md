@@ -42,3 +42,10 @@
 - Added AOT-safe JSON serialization configuration.
 - Expanded test coverage for color math and output formatting.
 - Added project README with example outputs.
+
+## 0.2.3
+- Updated multiplier to iterate palettes per column using previous highlight.
+- Swatch layout now renders as 5xN grid with 16px default tile size.
+
+## 0.2.4
+- Routed CLI text output through the shared palette formatter/writer.

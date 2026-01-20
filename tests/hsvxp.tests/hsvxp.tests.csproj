@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\hsvxp.core\hsvxp.core.csproj" />
+    <ProjectReference Include="..\..\src\hsvxp\hsvxp.csproj" />
   </ItemGroup>
 
 </Project>
