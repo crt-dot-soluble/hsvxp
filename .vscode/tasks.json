@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Activate ARCHITECT Agent",
+      "type": "shell",
+      "command": "echo 'ARCHITECT agent active. Follow /.ai/agents/architect.md'"
+    },
+    {
+      "label": "Activate GIT Agent",
+      "type": "shell",
+      "command": "echo 'GIT agent active. Follow /.ai/agents/git.md'"
+    },
+    {
+      "label": "Activate DEBUG Agent",
+      "type": "shell",
+      "command": "echo 'DEBUG agent active. Follow /.ai/agents/debug.md'"
+    },
+    {
+      "label": "Activate IMPLEMENTER Agent",
+      "type": "shell",
+      "command": "echo 'IMPLEMENTER agent active. Follow /.ai/agents/implementer.md'"
+    },
+    {
+      "label": "Activate TESTER Agent",
+      "type": "shell",
+      "command": "echo 'TESTER agent active. Follow /.ai/agents/tester.md'"
+    },
+    {
+      "label": "Activate REFACTOR Agent",
+      "type": "shell",
+      "command": "echo 'REFACTOR agent active. Follow /.ai/agents/refactor.md'"
+    }
+  ]
+}
