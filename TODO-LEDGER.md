@@ -21,3 +21,4 @@
 - [DONE] Refresh README/spec and prepare release artifacts
 - [DONE] Document distribution artifacts in README
 - [DONE] Add swatch orientation option and align swatch label formatting
+- [DONE] Run Governance Bootstrap task to generate governance.config.json

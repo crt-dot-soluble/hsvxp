@@ -3,6 +3,8 @@
 ## Mission
 Own all git and GitHub-related operations, monitoring, and policy enforcement.
 
+Agents MUST load the governance policy before acting and obey the stop contract.
+
 ## You MAY
 - Monitor and review changes in git/GitHub-relevant files (e.g., .gitignore, .gitattributes, .github/*, CODEOWNERS)
 - Validate diffs for git hygiene and repository policy compliance

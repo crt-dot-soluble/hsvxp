@@ -1,4 +1,4 @@
-# SPEC_VERSION: 1.0.1
+# SPEC_VERSION: 1.0.3
 # APP_NAME: HSVXP
 # PURPOSE: Deterministic HSV‑based palette expansion CLI for pixel‑art workflows, supporting strict color input formats, palette multiplication, and standardized labeled swatch tiles.
 
@@ -45,6 +45,7 @@ HSVXP only accepts the following formats:
 - Any unlisted format
 
 ## 2.3 Input Priority
+0. If --grayscale-image is present and no color/random is supplied → perform image grayscale only.
 1. If --random is present → ignore positional color
 2. Else if positional color present → parse
 3. Else → error
@@ -67,7 +68,7 @@ range:
 
 rules:
 - MAIN.H = parsed.H
-- MAIN.S = 70
+- MAIN.S = parsed.S
 - MAIN.V = parsed.V
 
 ---
@@ -85,7 +86,7 @@ Roles:
 # 5. PALETTE_RULES
 MAIN:
   H: MAIN.H
-  S: 70
+  S: MAIN.S
   V: MAIN.V
 
 HIGHLIGHT:
@@ -110,6 +111,17 @@ DARK_ACCENT:
 
 ---
 
+# 5.1 GRAYSCALE_MODE
+trigger: --grayscale
+rules:
+- After input normalization (and optional invert), force MAIN.H = 0 and MAIN.S = 0.
+- For all derived roles, set H = 0 and S = 0 (ignore H/S offsets).
+- Apply only the V offsets from PALETTE_RULES.
+- Output order per multiplier column is darkest-to-lightest based on V (ascending). If V ties, keep the standard role order.
+- Multiplier expansion still uses the previous column HIGHLIGHT as the next column MAIN.
+
+---
+
 # 6. CLAMPING
 hue wraps at 0/360.
 saturation and value clamp to 0–100.
@@ -120,13 +132,25 @@ saturation and value clamp to 0–100.
 - multiplier = 1 → 5 colors
 - multiplier = 3 → 15 colors
 - Naming: ROLE_1, ROLE_2, ...
-- Iterative expansion: each next column reuses the previous column HIGHLIGHT as the new MAIN (H preserved, S forced to 70, V preserved).
+- Iterative expansion: each next column reuses the previous column HIGHLIGHT as the new MAIN (H/S/V preserved).
 - Valid range: 1–16
 
 ---
 
 # 8. OUTPUT
 Text, JSON, or raw HSV.
+
+---
+
+# 8.1 IMAGE_GRAYSCALE_OUTPUT
+trigger: --grayscale-image <path>
+behavior:
+- Load the input image from path.
+- Convert each pixel to grayscale using luminance (0.299*R + 0.587*G + 0.114*B).
+- Write output image as "image-grayscale-<original-name>" in the same directory.
+- Preserve the original file extension.
+- If output swatch flag is also provided, both operations may occur (palette output and image grayscale).
+- Palette generation still requires a color input unless --random is supplied.
 
 ---
 
@@ -138,6 +162,8 @@ Text, JSON, or raw HSV.
 -c, --copy
 -r, --random
 -i, --invert
+-g, --grayscale
+-G, --grayscale-image <path>
 -j, --json
 -R, --raw
 -C, --config <path>
@@ -156,8 +182,8 @@ MAIN.V = random(50–100)
 # 11. INVERT_RULES
 RGB inverted = (255-R, 255-G, 255-B)
 Convert to HSV
-MAIN.S = 70
 MAIN.H = inverted.H
+MAIN.S = inverted.S
 MAIN.V = inverted.V
 
 ---
@@ -166,9 +192,10 @@ MAIN.V = inverted.V
 JPEG output, 5 rows (MAIN, HIGHLIGHT, SHADOW, LIGHT_ACCENT, DARK_ACCENT) and N columns where N=multiplier.
 Default square size is 32×32 (configurable) and clamped to a minimum that fits all labels.
 Swatch orientation defaults to 5 rows × N columns (N = multiplier). When --swatch-orientation rows is provided, render 5 columns × N rows.
+When --grayscale is provided, rows (or columns in rows orientation) are ordered darkest-to-lightest per multiplier column.
 Each tile overlay includes:
 VARIANT_NAME
-HEX: #RRGGBB
+HEX: hex(#RRGGBB) (or hex(#RGB) when compressible)
 RGB: rgb(R,G,B)
 HSV: hsv(H,S,V)
 
@@ -187,6 +214,7 @@ swatch_failure: "ERROR: Could not write swatch file."
 invalid_swatch_orientation: "ERROR: Invalid swatch orientation. Use columns or rows."
 invalid_multiplier: "ERROR: Invalid multiplier. Use 1–16."
 missing_color: "ERROR: No color provided. Use a color or --random."
+invalid_grayscale_image: "ERROR: Could not process grayscale image."
 
 ---
 
@@ -208,11 +236,11 @@ missing_color: "ERROR: No color provided. Use a color or --random."
 # 17. SAMPLE_OUTPUT
 NAME              H    S    V    R    G    B  HEX
 --------------  ---  ---  ---  ---  ---  ---  -------
-MAIN_1          355   70   95  240   30   40  #F01E28
-HIGHLIGHT_1     360   77  100  255   60   70  #FF3C46
-SHADOW_1        350   55   68  175   40   55  #AF2837
-LIGHT_ACCENT_1    5   55  100  255  150  160  #FF96A0
-DARK_ACCENT_1   340   35   50  130   50   70  #823246
+MAIN_1          357   88   94  240   30   40  #F01E28
+HIGHLIGHT_1       2   95  100  255   23   14  #FF170E
+SHADOW_1        352   73   67  171   47   63  #AB2F3F
+LIGHT_ACCENT_1    7   73  100  255   92   70  #FF5C46
+DARK_ACCENT_1   342   53   49  125   59   79  #7D3B4F
 
 ---
 
@@ -225,6 +253,8 @@ hsvxp <color> [options]
 -c, --copy
 -r, --random
 -i, --invert
+-g, --grayscale
+-G, --grayscale-image <path>
 -j, --json
 -R, --raw
 -C, --config <path>

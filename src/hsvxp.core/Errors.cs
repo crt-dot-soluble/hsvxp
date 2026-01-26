@@ -8,4 +8,5 @@ public static class Errors
     public const string InvalidSwatchOrientation = "ERROR: Invalid swatch orientation. Use columns or rows.";
     public const string InvalidMultiplier = "ERROR: Invalid multiplier. Use 1–16.";
     public const string MissingColor = "ERROR: No color provided. Use a color or --random.";
+    public const string InvalidGrayscaleImage = "ERROR: Could not process grayscale image.";
 }

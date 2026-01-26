@@ -3,6 +3,8 @@
 ## Mission
 Design and evolve system architecture, modules, and interfaces.
 
+Agents MUST load the governance policy before acting and obey the stop contract.
+
 ## You MAY
 - Create or modify specifications
 - Define APIs and schemas

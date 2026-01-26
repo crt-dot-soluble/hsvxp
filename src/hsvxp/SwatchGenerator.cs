@@ -37,10 +37,11 @@ public static class SwatchGenerator
 
         var font = ResolveFont(tileSize);
         var lineHeight = font.Size + 2;
+        var grayscaleOrder = BuildGrayscaleOrder(colors);
 
         foreach (var color in colors)
         {
-            if (!TryGetTilePosition(color.Name, orientation, out var column, out var row))
+            if (!TryGetTilePosition(color.Name, orientation, grayscaleOrder, out var column, out var row))
             {
                 continue;
             }
@@ -57,7 +58,7 @@ public static class SwatchGenerator
             var startY = yOffset + 6;
 
             DrawText(image, color.Name, font, textColor, startX, startY);
-            DrawText(image, $"HEX: {color.Hex}", font, textColor, startX, startY + lineHeight);
+            DrawText(image, $"HEX: {FormatHexInput(color.Hex)}", font, textColor, startX, startY + lineHeight);
             DrawText(image, $"RGB: rgb({color.Rgb.R},{color.Rgb.G},{color.Rgb.B})", font, textColor, startX, startY + lineHeight * 2);
 
             var h = (int)Math.Round(color.Hsv.H, MidpointRounding.AwayFromZero);
@@ -99,10 +100,46 @@ public static class SwatchGenerator
         return luminance > 0.6 ? Color.Black : Color.White;
     }
 
-    private static bool TryGetTilePosition(string name, SwatchOrientation orientation, out int column, out int row)
+    private static bool TryGetTilePosition(string name, SwatchOrientation orientation, Dictionary<string, Dictionary<int, int>>? grayscaleOrder, out int column, out int row)
     {
         column = 0;
         row = 0;
+
+        if (!TryParseRoleIndex(name, out var role, out var index))
+        {
+            return false;
+        }
+
+        if (!RoleOrder.TryGetValue(role, out var roleIndex))
+        {
+            return false;
+        }
+
+        var orderedIndex = roleIndex;
+        if (grayscaleOrder is not null
+            && grayscaleOrder.TryGetValue(role, out var indexMap)
+            && indexMap.TryGetValue(index, out var grayscaleIndex))
+        {
+            orderedIndex = grayscaleIndex;
+        }
+
+        var paletteIndex = index - 1;
+        if (orientation == SwatchOrientation.Rows)
+        {
+            column = orderedIndex;
+            row = paletteIndex;
+            return true;
+        }
+
+        column = paletteIndex;
+        row = orderedIndex;
+        return true;
+    }
+
+    private static bool TryParseRoleIndex(string name, out string role, out int index)
+    {
+        role = string.Empty;
+        index = 0;
 
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -115,30 +152,75 @@ public static class SwatchGenerator
             return false;
         }
 
-        var role = name[..splitIndex];
+        role = name[..splitIndex];
         var indexText = name[(splitIndex + 1)..];
 
-        if (!int.TryParse(indexText, out var index) || index < 1)
+        return int.TryParse(indexText, out index) && index >= 1;
+    }
+
+    private static Dictionary<string, Dictionary<int, int>>? BuildGrayscaleOrder(IReadOnlyList<PaletteColor> colors)
+    {
+        if (!IsGrayscalePalette(colors))
+        {
+            return null;
+        }
+
+        var byIndex = new Dictionary<int, List<(string Role, double Value)>>();
+        foreach (var color in colors)
+        {
+            if (!TryParseRoleIndex(color.Name, out var role, out var index))
+            {
+                continue;
+            }
+
+            if (!byIndex.TryGetValue(index, out var list))
+            {
+                list = new List<(string, double)>();
+                byIndex[index] = list;
+            }
+
+            list.Add((role, color.Hsv.V));
+        }
+
+        var order = new Dictionary<string, Dictionary<int, int>>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in byIndex)
+        {
+            var index = entry.Key;
+            var ordered = entry.Value
+                .OrderBy(item => item.Value)
+                .ThenBy(item => GetRoleOrder(item.Role))
+                .ToList();
+
+            for (var rowIndex = 0; rowIndex < ordered.Count; rowIndex++)
+            {
+                var role = ordered[rowIndex].Role;
+                if (!order.TryGetValue(role, out var indexMap))
+                {
+                    indexMap = new Dictionary<int, int>();
+                    order[role] = indexMap;
+                }
+
+                indexMap[index] = rowIndex;
+            }
+        }
+
+        return order;
+    }
+
+    private static bool IsGrayscalePalette(IReadOnlyList<PaletteColor> colors)
+    {
+        if (colors.Count == 0)
         {
             return false;
         }
 
-        if (!RoleOrder.TryGetValue(role, out var roleIndex))
-        {
-            return false;
-        }
+        const double epsilon = 0.0001;
+        return colors.All(color => Math.Abs(color.Hsv.S) <= epsilon);
+    }
 
-        var paletteIndex = index - 1;
-        if (orientation == SwatchOrientation.Rows)
-        {
-            column = roleIndex;
-            row = paletteIndex;
-            return true;
-        }
-
-        column = paletteIndex;
-        row = roleIndex;
-        return true;
+    private static int GetRoleOrder(string role)
+    {
+        return RoleOrder.TryGetValue(role, out var index) ? index : int.MaxValue;
     }
 
     private static int CalculateMinimumTileSize(IReadOnlyList<PaletteColor> colors, int requestedSize)
@@ -163,7 +245,7 @@ public static class SwatchGenerator
     {
         var maxNameLength = colors.Any() ? colors.Max(c => c.Name.Length) : 6;
         var sampleName = new string('W', Math.Max(6, maxNameLength));
-        var sampleHex = "HEX: #FFFFFF";
+        var sampleHex = "HEX: hex(#FFFFFF)";
         var sampleRgb = "RGB: rgb(255,255,255)";
         var sampleHsv = "HSV: hsv(360,100,100)";
 
@@ -181,6 +263,28 @@ public static class SwatchGenerator
         var requiredWidth = maxWidth + padding;
 
         return (int)Math.Ceiling(Math.Max(requiredHeight, requiredWidth));
+    }
+
+    private static string FormatHexInput(string hex)
+    {
+        if (string.IsNullOrWhiteSpace(hex) || hex.Length != 7 || hex[0] != '#')
+        {
+            return $"hex({hex})";
+        }
+
+        var r1 = hex[1];
+        var r2 = hex[2];
+        var g1 = hex[3];
+        var g2 = hex[4];
+        var b1 = hex[5];
+        var b2 = hex[6];
+
+        if (r1 == r2 && g1 == g2 && b1 == b2)
+        {
+            return $"hex(#{r1}{g1}{b1})";
+        }
+
+        return $"hex({hex})";
     }
 }
 

@@ -30,3 +30,13 @@
 - Prepared distribution artifacts (exe and core DLL) for v1.0.0 release.
 - Documented distribution artifacts in README.
 - Added swatch orientation flag to swap rows/columns and standardized swatch labels to rgb(...) and hsv(...).
+- Preserved input HSV for MAIN colors, updated multiplier to carry highlight HSV unchanged, and refreshed spec/docs/tests accordingly.
+- Cleaned generated outputs and added three new real swatch examples (teal, indigo, amber) to README with images under docs/.
+- Synced AI governance files to latest framework (instructions, agents, tasks, scripts, templates, workflow) and added required docs/src placeholders.
+- Updated swatch HEX label formatting to render as hex(#RRGGBB) or hex(#RGB) for input-style consistency.
+- Added grayscale palette mode specification with ordered grayscale output rules.
+- Implemented grayscale palette generation, CLI flag, and brightness-ordered swatch layout; added unit tests and ran the full test suite.
+- Generated new grayscale and color swatches for documentation and refreshed README/docs/wiki references.
+- Added grayscale image option to the specification for input image conversion.
+- Clarified input priority to allow grayscale-image-only runs.
+- Implemented grayscale image conversion with luminance formula and added unit tests.

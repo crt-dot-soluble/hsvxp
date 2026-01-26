@@ -22,14 +22,15 @@ public class PaletteGeneratorTests
     [Fact]
     public void MultiplierIterationsShiftMain()
     {
-        var main = new HsvColor(200, 70, 60);
+        var main = new HsvColor(200, 40, 60);
         var palette = PaletteGenerator.Generate(main, 2);
 
-        var main1 = palette.First(p => p.Name == "MAIN_1");
+        var highlight1 = palette.First(p => p.Name == "HIGHLIGHT_1");
         var main2 = palette.First(p => p.Name == "MAIN_2");
 
-        Assert.NotEqual(main1.Hsv.H, main2.Hsv.H);
-        Assert.NotEqual(main1.Hsv.V, main2.Hsv.V);
+        Assert.Equal(highlight1.Hsv.H, main2.Hsv.H);
+        Assert.Equal(highlight1.Hsv.S, main2.Hsv.S);
+        Assert.Equal(highlight1.Hsv.V, main2.Hsv.V);
     }
 
     [Fact]
@@ -42,5 +43,43 @@ public class PaletteGeneratorTests
         Assert.Equal(360, highlight.Hsv.H);
         Assert.Equal(77, highlight.Hsv.S);
         Assert.Equal(100, highlight.Hsv.V);
+    }
+
+    [Fact]
+    public void GrayscaleForcesZeroHueSaturationAndOrdersByValue()
+    {
+        var main = new HsvColor(210, 55, 60);
+        var palette = PaletteGenerator.Generate(main, 1, true);
+
+        Assert.All(palette, color =>
+        {
+            Assert.Equal(0, color.Hsv.H);
+            Assert.Equal(0, color.Hsv.S);
+        });
+
+        var expectedOrder = new[]
+        {
+            "DARK_ACCENT_1",
+            "SHADOW_1",
+            "MAIN_1",
+            "HIGHLIGHT_1",
+            "LIGHT_ACCENT_1"
+        };
+
+        Assert.Equal(expectedOrder, palette.Select(color => color.Name).ToArray());
+    }
+
+    [Fact]
+    public void GrayscaleMultiplierUsesHighlightAsNextMain()
+    {
+        var main = new HsvColor(210, 55, 60);
+        var palette = PaletteGenerator.Generate(main, 2, true);
+
+        var highlight1 = palette.First(p => p.Name == "HIGHLIGHT_1");
+        var main2 = palette.First(p => p.Name == "MAIN_2");
+
+        Assert.Equal(highlight1.Hsv.H, main2.Hsv.H);
+        Assert.Equal(highlight1.Hsv.S, main2.Hsv.S);
+        Assert.Equal(highlight1.Hsv.V, main2.Hsv.V);
     }
 }

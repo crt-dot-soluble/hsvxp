@@ -32,6 +32,80 @@
 			"command": "echo 'REFACTOR agent active. Follow /.ai/agents/refactor.md'"
 		},
 		{
+			"label": "Governance Bootstrap",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"scripts/bootstrap.ps1",
+				"-Mode",
+				"${input:bootstrapMode}",
+				"-VersionControl",
+				"${input:versionControlPolicy}",
+				"-Testing",
+				"${input:testingPolicy}",
+				"-Documentation",
+				"${input:documentationPolicy}",
+				"-Language",
+				"${input:primaryLanguage}",
+				"-Frameworks",
+				"${input:frameworks}",
+				"-Autonomy",
+				"${input:autonomyPolicy}"
+			]
+		},
+		{
+			"label": "Governance Policy Revision",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"scripts/policy-update.ps1",
+				"-VersionControl",
+				"${input:versionControlPolicy}",
+				"-Testing",
+				"${input:testingPolicy}",
+				"-Documentation",
+				"${input:documentationPolicy}",
+				"-Language",
+				"${input:primaryLanguage}",
+				"-Frameworks",
+				"${input:frameworks}",
+				"-Autonomy",
+				"${input:autonomyPolicy}"
+			]
+		},
+		{
+			"label": "Set Autonomy Policy",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"scripts/policy-update.ps1",
+				"-Autonomy",
+				"${input:autonomyPolicy}"
+			]
+		},
+		{
+			"label": "Set Workflow Mode",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"scripts/policy-update.ps1",
+				"-VersionControl",
+				"${input:versionControlPolicy}"
+			]
+		},
+		{
 			"label": "Run HSVXP (external terminal)",
 			"type": "shell",
 			"command": "powershell",
@@ -42,6 +116,174 @@
 			"isBackground": false,
 			"problemMatcher": [],
 			"group": "build"
+		}
+	],
+	"inputs": [
+		{
+			"id": "bootstrapMode",
+			"type": "pickString",
+			"description": "Bootstrap mode",
+			"options": [
+				"defaults",
+				"customize"
+			]
+		},
+		{
+			"id": "versionControlPolicy",
+			"type": "pickString",
+			"description": "Version control policy",
+			"options": [
+				"git-local",
+				"git-remote",
+				"git-remote-ci"
+			]
+		},
+		{
+			"id": "testingPolicy",
+			"type": "pickString",
+			"description": "Testing policy",
+			"options": [
+				"full",
+				"baseline"
+			]
+		},
+		{
+			"id": "documentationPolicy",
+			"type": "pickString",
+			"description": "Documentation policy",
+			"options": [
+				"inline",
+				"comments-only",
+				"generate"
+			]
+		},
+		{
+			"id": "primaryLanguage",
+			"type": "pickString",
+			"description": "Primary language",
+			"options": [
+				"C",
+				"C++",
+				"C#",
+				"F#",
+				"Go",
+				"Rust",
+				"Python",
+				"Java",
+				"Kotlin",
+				"Scala",
+				"JavaScript",
+				"TypeScript",
+				"Ruby",
+				"PHP",
+				"Swift",
+				"Objective-C",
+				"Dart",
+				"R",
+				"MATLAB",
+				"Julia",
+				"Haskell",
+				"Elixir",
+				"Erlang",
+				"OCaml",
+				"Clojure",
+				"Lua",
+				"Shell",
+				"PowerShell",
+				"SQL",
+				"HTML/CSS",
+				"Other"
+			]
+		},
+		{
+			"id": "frameworks",
+			"type": "pickString",
+			"description": "Framework / runtime (select the closest match)",
+			"options": [
+				"None",
+				"Node.js",
+				"Deno",
+				"Bun",
+				"React",
+				"Next.js",
+				"Remix",
+				"Vue",
+				"Nuxt",
+				"Svelte",
+				"SvelteKit",
+				"Angular",
+				"Express",
+				"NestJS",
+				"Fastify",
+				"Hapi",
+				"Koa",
+				"Spring Boot",
+				"Spring",
+				"Micronaut",
+				"Quarkus",
+				"Jakarta EE",
+				"Play",
+				"Django",
+				"Flask",
+				"FastAPI",
+				"Pyramid",
+				"Tornado",
+				"Sanic",
+				"Ruby on Rails",
+				"Sinatra",
+				"Hanami",
+				"Laravel",
+				"Symfony",
+				"Slim",
+				"CodeIgniter",
+				"ASP.NET Core",
+				"Blazor",
+				"MAUI",
+				"Xamarin",
+				"WPF",
+				"WinUI",
+				"Qt",
+				"GTK",
+				"Electron",
+				"Tauri",
+				"Flutter",
+				"React Native",
+				"Ionic",
+				"Unity",
+				"Unreal Engine",
+				"Godot",
+				"TensorFlow",
+				"PyTorch",
+				"JAX",
+				"Hugging Face",
+				"scikit-learn",
+				"Spark",
+				"Hadoop",
+				"Kafka",
+				"Airflow",
+				"Beam",
+				"Ray",
+				"gRPC",
+				"REST",
+				"GraphQL",
+				"tRPC",
+				"OpenAPI",
+				"Serverless",
+				"AWS Lambda",
+				"Azure Functions",
+				"Google Cloud Functions",
+				"Other"
+			]
+		},
+		{
+			"id": "autonomyPolicy",
+			"type": "pickString",
+			"description": "Autonomy & feedback policy",
+			"options": [
+				"feature",
+				"milestone",
+				"fully-autonomous"
+			]
 		}
 	]
 }

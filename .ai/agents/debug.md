@@ -3,6 +3,8 @@
 ## Mission
 Detect, diagnose, and fix bugs, errors, and regressions.
 
+Agents MUST load the governance policy before acting and obey the stop contract.
+
 ## You MAY
 - Reproduce issues and isolate root causes
 - Modify production code to fix defects

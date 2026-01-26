@@ -51,6 +51,16 @@ internal static class Program
 			Description = "Invert the input RGB color before HSV normalization."
 		};
 
+		var grayscaleOption = new Option<bool>("--grayscale", new[] { "-g" })
+		{
+			Description = "Force grayscale palette generation."
+		};
+
+		var grayscaleImageOption = new Option<string?>("--grayscale-image", new[] { "-G" })
+		{
+			Description = "Grayscale an input image and write a new file."
+		};
+
 		var jsonOption = new Option<bool>("--json", new[] { "-j" })
 		{
 			Description = "Output JSON."
@@ -86,6 +96,8 @@ internal static class Program
 			copyOption,
 			randomOption,
 			invertOption,
+			grayscaleOption,
+			grayscaleImageOption,
 			jsonOption,
 			rawOption,
 			configOption,
@@ -108,6 +120,8 @@ internal static class Program
 		var copy = parseResult.GetValue(copyOption);
 		var random = parseResult.GetValue(randomOption);
 		var invert = parseResult.GetValue(invertOption);
+		var grayscale = parseResult.GetValue(grayscaleOption);
+		var grayscaleImage = parseResult.GetValue(grayscaleImageOption);
 		var json = parseResult.GetValue(jsonOption);
 		var raw = parseResult.GetValue(rawOption);
 		var configPath = parseResult.GetValue(configOption);
@@ -123,6 +137,8 @@ internal static class Program
 			"-c", "--copy",
 			"-r", "--random",
 			"-i", "--invert",
+			"-g", "--grayscale",
+			"-G", "--grayscale-image",
 			"-j", "--json",
 			"-R", "--raw",
 			"-C", "--config",
@@ -157,6 +173,18 @@ internal static class Program
 			return ExitFailure;
 		}
 
+		var imageOnly = !random && string.IsNullOrWhiteSpace(parsedColor) && !string.IsNullOrWhiteSpace(grayscaleImage);
+		if (imageOnly)
+		{
+			if (!ImageGrayscaleConverter.TryConvert(grayscaleImage, out _))
+			{
+				Console.WriteLine(Errors.InvalidGrayscaleImage);
+				return ExitFailure;
+			}
+
+			return 0;
+		}
+
 		if (!random && string.IsNullOrWhiteSpace(parsedColor))
 		{
 			Console.WriteLine(Errors.MissingColor);
@@ -177,7 +205,7 @@ internal static class Program
 
 		var main = random
 			? CreateRandomMain()
-			: new HsvColor(inputColor!.Hsv.H, 70, inputColor!.Hsv.V);
+			: inputColor!.Hsv;
 
 		if (invert)
 		{
@@ -187,10 +215,10 @@ internal static class Program
 
 			var inverted = new RgbColor((byte)(255 - rgb.R), (byte)(255 - rgb.G), (byte)(255 - rgb.B));
 			var invertedHsv = ColorMath.RgbToHsv(inverted);
-			main = new HsvColor(invertedHsv.H, 70, invertedHsv.V);
+			main = invertedHsv;
 		}
 
-		var palette = PaletteGenerator.Generate(main, resolvedMultiplier);
+		var palette = PaletteGenerator.Generate(main, resolvedMultiplier, grayscale);
 		var output = json
 			? OutputFormatter.FormatJson(palette)
 			: raw
@@ -228,6 +256,15 @@ internal static class Program
 			catch
 			{
 				Console.WriteLine(Errors.SwatchFailure);
+				return ExitFailure;
+			}
+		}
+
+		if (!string.IsNullOrWhiteSpace(grayscaleImage))
+		{
+			if (!ImageGrayscaleConverter.TryConvert(grayscaleImage, out _))
+			{
+				Console.WriteLine(Errors.InvalidGrayscaleImage);
 				return ExitFailure;
 			}
 		}

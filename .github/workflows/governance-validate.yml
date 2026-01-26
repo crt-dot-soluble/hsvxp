@@ -11,6 +11,8 @@ jobs:
       - name: Verify governance files
         run: |
           required=(
+            CONSTITUTION.md
+            governance.config.json
             .github/copilot-instructions.md
             .ai/global-instructions.md
             .ai/agents/architect.md
@@ -20,13 +22,25 @@ jobs:
             .ai/agents/tester.md
             .ai/agents/refactor.md
             .vscode/copilot.context.md
+            .vscode/tasks.json
+            scripts/bootstrap.sh
+            scripts/bootstrap.ps1
+            scripts/policy-validate.sh
+            scripts/policy-validate.ps1
+            scripts/policy-update.ps1
+            scripts/policy-update.sh
+            scripts/git-init.sh
+            scripts/git-init.ps1
             TODO-LEDGER.md
             MEMORY-LEDGER.md
             CHANGELOG.md
             plans/README.md
             spec/README.md
+            docs/README.md
+            src/README.md
             templates/README.md
             templates/CHANGELOG.md
+            templates/CONSTITUTION.md
             templates/MEMORY-LEDGER.md
             templates/TODO-LEDGER.md
             templates/PLAN.md
@@ -62,3 +76,6 @@ jobs:
 
       - name: CI placeholder
         run: echo "Add language-specific tests here."
+
+      - name: Validate governance policy
+        run: bash scripts/policy-validate.sh

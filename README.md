@@ -6,6 +6,8 @@ Deterministic HSV-based palette expansion CLI for pixel-art workflows. HSVXP acc
 - Strict color parsing: `#RGB`, `#RRGGBB`, `hex(#RGB)`, `hex(#RRGGBB)`, `rgb(R,G,B)`, `hsv(H,S,V)`
 - HSV normalization with standardized palette roles
 - Multiplier expansion from 1–16
+- Optional grayscale palette mode with brightness-ordered output
+- Optional grayscale image conversion for texture prep
 - Text, JSON, or raw HSV output
 - JPEG swatch generation with labeled tiles
 - Config file support via `hsvxp.config.json`
@@ -42,6 +44,8 @@ Options:
 - `-c, --copy`
 - `-r, --random`
 - `-i, --invert`
+- `-g, --grayscale`
+- `-G, --grayscale-image <path>`
 - `-j, --json`
 - `-R, --raw`
 - `-C, --config <path>`
@@ -69,16 +73,16 @@ LIGHT_ACCENT_1    7   55  100  255  131  115  #FF8373
 DARK_ACCENT_1   342   35   49  125   81   94  #7D515E
 
 MAIN_2            2   70  100  255   83   77  #FF534D
-HIGHLIGHT_2       7   77  100  255   82   59  #FF523B
-SHADOW_2        357   55   73  186   84   89  #BA5459
-LIGHT_ACCENT_2   12   55  100  255  143  115  #FF8F73
-DARK_ACCENT_2   347   35   55  140   91  102  #8C5B66
+HIGHLIGHT_2       7   84  100  255   66   41  #FF4229
+SHADOW_2        357   62   73  186   71   76  #BA474C
+LIGHT_ACCENT_2   12   62  100  255  129   97  #FF8161
+DARK_ACCENT_2   347   42   55  140   81   94  #8C515E
 
-MAIN_3            7   70  100  255   98   77  #FF624D
-HIGHLIGHT_3      12   77  100  255   98   59  #FF623B
-SHADOW_3          2   55   73  186   87   84  #BA5754
-LIGHT_ACCENT_3   17   55  100  255  155  115  #FF9B73
-DARK_ACCENT_3   352   35   55  140   91   98  #8C5B62
+MAIN_3            7   84  100  255   66   41  #FF4229
+HIGHLIGHT_3      12   91  100  255   70   23  #FF4617
+SHADOW_3          2   69   73  186   62   58  #BA3E3A
+LIGHT_ACCENT_3   17   69  100  255  129   79  #FF814F
+DARK_ACCENT_3   352   49   55  140   72   81  #8C4851
 ```
 
 JSON output:
@@ -137,6 +141,14 @@ Create `hsvxp.config.json`:
 ```
 
 ## Swatch output
-Use `-o` to generate a 5×N swatch grid (5 rows × multiplier columns). Each tile includes the variant name, hex, `rgb(...)`, and `hsv(...)` values. The tile size is clamped to a minimum that fits all labels. Use `--swatch-orientation rows` to swap rows/columns (5 columns × multiplier rows).
+Use `-o` to generate a 5×N swatch grid (5 rows × multiplier columns). Each tile includes the variant name, `hex(#RRGGBB)` (or `hex(#RGB)` when compressible), `rgb(...)`, and `hsv(...)` values. The tile size is clamped to a minimum that fits all labels. Use `--swatch-orientation rows` to swap rows/columns (5 columns × multiplier rows). When `--grayscale` is set, rows/columns are ordered darkest-to-lightest per multiplier column to make tone progression obvious.
 
-![Sample swatch](docs/sample-swatch.jpg)
+## Example swatches
+Grayscale (multiplier 4, `--grayscale`):
+![Grayscale swatch](docs/swatch-grayscale-128.jpg)
+
+Soft sage (rgb(143,191,166), multiplier 4):
+![Sage swatch](docs/swatch-sage-143-191-166.jpg)
+
+Warm sunset (rgb(242,166,90), multiplier 4):
+![Sunset swatch](docs/swatch-sunset-242-166-90.jpg)

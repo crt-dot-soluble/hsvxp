@@ -53,6 +53,22 @@
 ## 0.2.5
 - Enforced minimum swatch tile size based on label measurements.
 
+## 1.0.2
+- Preserve input HSV for MAIN colors and carry highlight HSV across multiplier steps.
+- Updated spec, docs, and tests for new MAIN handling.
+
+## 1.0.3
+- Swatch tile HEX labels now render as hex(#RRGGBB) or hex(#RGB) for input-style consistency.
+
+## 1.0.4
+- Added grayscale palette mode specification, including output ordering rules.
+- Implemented grayscale palette generation, ordering, and CLI flag.
+- Updated swatch ordering to render grayscale palettes darkest-to-lightest.
+- Refreshed README/docs/wiki and added new swatch samples for grayscale and new palettes.
+- Added grayscale image option specification.
+- Clarified grayscale image input priority for image-only usage.
+- Implemented grayscale image conversion and added tests.
+
 ## 1.0.1
 - Added swatch orientation option to render palettes as rows or columns.
 - Standardized swatch label formatting to use rgb(...) and hsv(...).

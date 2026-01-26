@@ -13,19 +13,30 @@ public static class PaletteGenerator
 
     public static IReadOnlyList<PaletteColor> Generate(HsvColor main, int multiplier)
     {
+        return Generate(main, multiplier, false);
+    }
+
+    public static IReadOnlyList<PaletteColor> Generate(HsvColor main, int multiplier, bool grayscale)
+    {
         var results = new List<PaletteColor>(Roles.Length * multiplier);
         var currentMain = main;
 
         for (var index = 1; index <= multiplier; index++)
         {
             HsvColor? highlight = null;
+            List<(int RoleIndex, PaletteColor Color, double Value)>? columnColors = grayscale
+                ? new List<(int, PaletteColor, double)>(Roles.Length)
+                : null;
 
-            foreach (var (role, hOffset, sOffset, vOffset) in Roles)
+            for (var roleIndex = 0; roleIndex < Roles.Length; roleIndex++)
             {
-                var adjusted = ColorMath.ClampHsv(new HsvColor(
-                    currentMain.H + hOffset,
-                    currentMain.S + sOffset,
-                    currentMain.V + vOffset));
+                var (role, hOffset, sOffset, vOffset) = Roles[roleIndex];
+                var adjusted = grayscale
+                    ? ColorMath.ClampHsv(new HsvColor(0, 0, currentMain.V + vOffset))
+                    : ColorMath.ClampHsv(new HsvColor(
+                        currentMain.H + hOffset,
+                        currentMain.S + sOffset,
+                        currentMain.V + vOffset));
 
                 if (role == "HIGHLIGHT")
                 {
@@ -35,12 +46,29 @@ public static class PaletteGenerator
                 var rgb = ColorMath.HsvToRgb(adjusted);
                 var hex = ColorMath.ToHex(rgb);
                 var name = $"{role}_{index}";
-                results.Add(new PaletteColor(name, adjusted, rgb, hex));
+                var color = new PaletteColor(name, adjusted, rgb, hex);
+
+                if (grayscale)
+                {
+                    columnColors!.Add((roleIndex, color, adjusted.V));
+                }
+                else
+                {
+                    results.Add(color);
+                }
+            }
+
+            if (grayscale && columnColors is not null)
+            {
+                foreach (var item in columnColors.OrderBy(entry => entry.Value).ThenBy(entry => entry.RoleIndex))
+                {
+                    results.Add(item.Color);
+                }
             }
 
             if (highlight is not null)
             {
-                currentMain = new HsvColor(highlight.Value.H, 70, highlight.Value.V);
+                currentMain = highlight.Value;
             }
         }
 

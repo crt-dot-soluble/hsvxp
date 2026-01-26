@@ -1,0 +1,32 @@
+﻿{
+    "version":  "1.0.0",
+    "policyGeneratedBy":  "bootstrap",
+    "bootstrap":  {
+                      "mode":  "customize",
+                      "skipped":  false,
+                      "timestamp":  "2026-01-20"
+                  },
+    "versionControl":  "git-remote-ci",
+    "testing":  "full",
+    "documentation":  "generate",
+    "language":  {
+                     "primary":  "C#",
+                     "frameworks":  [
+
+                                    ]
+                 },
+    "autonomy":  "fully-autonomous",
+    "phases":  {
+                   "required":  true,
+                   "list":  [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5
+                            ]
+               },
+    "ciCdEnforced":  true,
+    "remoteRequired":  true
+}
